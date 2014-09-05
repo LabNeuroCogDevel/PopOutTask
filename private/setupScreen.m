@@ -21,7 +21,8 @@ function w=setupScreen(backgroundColor,screenResolution)
      % set font
      v=version();
      v=str2double(v(1:3));
-     if(v>=8)
+     % if newer or are using octave
+     if v>=8 || exist('OCTAVE_VERSION','builtin')
          Screen('TextFont', w, 'Arial');
          Screen('TextSize', w, 22);
      else
