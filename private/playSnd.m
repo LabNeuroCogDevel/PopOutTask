@@ -27,8 +27,8 @@ function t=playSnd(varargin)
 end
 
 function wd = getwave(f)
-  %[y,freq] = wavread(f);
-  [y,~] = audioread(f);
+  [y,freq] = wavread(f); %for octave
+  %[y,~] = audioread(f);
   
   % we want 2 channels
   if size(y,2) == 1

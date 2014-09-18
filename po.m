@@ -1,6 +1,6 @@
 % po(rew=0|1) - popout Task rewarded block or not
 function subj = po(varargin) 
-    screenResolution=[800 600];
+    screenResolution=[1600 1200];
     backgroundColor=256/2*[1 1 1];
 
     % setup the screen, font size and blending
@@ -13,8 +13,8 @@ function subj = po(varargin)
     
     
     % total number of trials
-    %totalTrl=68;
-    totalTrl=2;
+    totalTrl=68;
+    %totalTrl=2;
     
     if ~isempty(varargin)
         ID = varargin{1};

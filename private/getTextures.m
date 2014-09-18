@@ -1,10 +1,13 @@
-% uses imresize, requires image pkg in octave
-
-% octave> pkg install -forge general control signal image
-% pkg load image
-
 function textures = getTextures(w)
   % need right,wrong, and neutral circle and center figures
+  if exist('OCTAVE_VERSION','builtin')
+      try
+       pkg load image
+      catch
+       error(['uses imresize, requires image pkg in octave\n'...
+              'pkg install -forge general control signal image']);
+      end
+  end
   
   imagenames = ...
    { { 'cnt','crt','img/check.png' }, ...
