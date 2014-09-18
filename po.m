@@ -13,15 +13,35 @@ function subj = po(varargin)
     
     
     % total number of trials
-    totalTrl=68;
+
     %totalTrl=2;
     
     if ~isempty(varargin)
         ID = varargin{1};
         rewblock=varargin{2}; % 0 or 1
+        
+        %not practice, know ideal RT
+        if(length(varargin)>2)
+            baseRT = varargin{3};
+            runQuest=0;
+            totalTrl=68;
+            totalTrl=4;
+            fprintf('not questing\n');
+            
+        % is practice, finding RT
+        else
+            fprintf('questing!\n');
+            baseRT=.5;
+            runQuest=1;
+            totalTrl=200;
+        end
+
     else
+        
         ID=[ date '_' num2str(now) ];
         rewblock=1;
+        % not practice, have an RT
+        error('give me some input');
     end
     % event list -- event_ITI event_Prp event_Cue event_Rsp event_Fbk 
     [eList, manips] = setupEvents(totalTrl,rewblock);
@@ -30,21 +50,16 @@ function subj = po(varargin)
     startime=GetSecs();
     trialInfo=struct(); % we'll build trial info without output of each event
     
-    %% setup on the fly manipulations
-    diffScale= calcDifficulty([0 0],[],[]); % diffScale from 0 to 1, where 1 is 4/9 distractors
-                                            % diffScale = [ hard easy ]
+    % expected RT for 80% correct
 
-    RTshift  = calcRTshift([0 0],[],[]); % +/- seconds of RT window
-                                         % RTshift = [ hard easy ]
+    RT = questRTshift(baseRT,[],[]);
+    RTshift = 0;
 
     %% get where to start and end
     % what events are we running
     firstEvent=1; 
     lastEvent=length(eList);
     
-    %% we update this after each trial, init for first trl
-    isEasy = manips.val(1,manips.easyIdx);
-
     
     %% go through each event we are running
     for eidx=firstEvent:lastEvent
@@ -68,16 +83,7 @@ function subj = po(varargin)
         % Fbk needs correct value
         if strmatch(eName,'Fbk')
            estart=GetSecs(); % start feedback right away (after Rsp)
-           params = [ params, {trialInfo(trl).Rsp.correct} ];
-           
-        % Cue needs difficulty value   
-        elseif strmatch(eName,'Cue')
-           
-           % add diff scale to the parameters of the Cue func
-           %  - use the first diffScale if not easy, second if is easy
-           params = [ params, diffScale(isEasy+1) ];
-           
-
+           params = [ params, {trialInfo(trl).Rsp.correct} ];  
         end
         
         %% the actual event
@@ -92,35 +98,34 @@ function subj = po(varargin)
         %       no support for an initial setting
 
         if trl>firstEvent && trl ~= eList{eidx-1}{1}
-           % get lists of easy and correct based on up to this trial
-           [isEasyL,isCorrectL] = getEasyAndCorrect(firstEvent, trl,trialInfo,manips);
-           [hardCorrectRatio, easyCorrectRatio] = getCorrectRatios(isEasyL,isCorrectL);
-
-           % use 2 lists to get how difficult the cue should be
-           diffScale = calcDifficulty(diffScale, hardCorrectRatio, easyCorrectRatio);
+           fprintf('%d trl\n',trl);
            
-           % RT manipulation
-           RTshift   = calcRTshift(RTshift, hardCorrectRatio, easyCorrectRatio);
+           %%RT manipulation
+           wasEasy = manips.val(trl-1,manips.easyIdx);
+           if ~wasEasy
+             wasCorrect = trialInfo(trl-1).Rsp.correct;
+             RT=questRTshift(RT,wasCorrect,runQuest);
+             RTshift = RT - baseRT;
+             fprintf('\tnew RT: %.2f, %.2f diff than base\n',RT,RTshift);
+           end
            
-           %TODO, shift maxRsp, feedback and ITI based on RT shift
-           isEasy = manips.val(trl,manips.easyIdx);
+           %shift following events by RTs
            nxt=eidx+1;
            while nxt<=lastEvent && eList{nxt}{1} == trl 
+                             
                if  any( strcmp(eList{nxt}{3}, {'Rsp','Fbk','ITI'}) )
-                   eList{nxt}{4} = eList{nxt}{4} + RTshift(isEasy+1);
+                   eList{nxt}{4} = eList{nxt}{4} + RTshift;
                end
                
                % add again to make ITI shorter and keep Fbk the same
                if  any( strcmp(eList{nxt}{3}, {'ITI'}) )
-                   eList{nxt}{4} = eList{nxt}{4} + RTshift(isEasy+1);
+                   eList{nxt}{4} = eList{nxt}{4} + RTshift;
                end
                
                nxt=nxt+1;
            end
            
            trialInfo(trl).RTshift   = RTshift;
-           trialInfo(trl).diffScale = diffScale;
-           trialInfo(trl).ratios    = [hardCorrectRatio, easyCorrectRatio];
            
         end
         
@@ -130,6 +135,7 @@ function subj = po(varargin)
     subj.trialInfo = trialInfo;
     subj.events = eList;
     subj.manips = manips;
+    subj.idealRTwin = baseRT + trialInfo(end).RTshift;
     save([ID '.mat'],'-struct','subj' );
     
     
@@ -141,6 +147,8 @@ function subj = po(varargin)
     %% finish up
     closedown();
     plotResults(subj);
+    
+    fprintf('====\nideal RT: %.3f\n===\n',subj.idealRTwin);
 
 end
 

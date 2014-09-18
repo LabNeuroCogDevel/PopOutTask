@@ -3,13 +3,9 @@ function t=playSnd(varargin)
   
   %% (re-)initialize audio
   if isempty(snds) || isempty(varargin)
+    PsychPortAudio('Close');
     InitializePsychSound;
-    try
-      pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
-    catch
-      PsychPortAudio('Close');
-      pahandle = PsychPortAudio('Open', [], [], 0, [], 2);
-    end
+    pahandle = PsychPortAudio('Open', [], [], 0, [], 2); 
 
     snds.crt = getwave('snd/cash.wav');
     snds.wrg = getwave('snd/171524__fins__error.wav');

@@ -1,4 +1,5 @@
-function t=event_Cue(w,when,dir,diffScale)
+function t=event_Cue(w,when,dir)%,diffScale)
+  diffScale=[0 0]; 
   if(dir==2)
       dispd='>';
       wrgd='<';
