@@ -7,7 +7,7 @@ function t=event_Cue(w,when,dir,diffScale)
       wrgd='>';
   end
   yd=1;
-  xd=9;
+  xd=1;
   n=yd*xd;
   maxwrng=floor(.49*n);
   
@@ -18,8 +18,11 @@ function t=event_Cue(w,when,dir,diffScale)
   
   % TODO: some at .6 are much harder than others
   %   if have one row like >>> -- easy
+  screensize=Screen('Rect',w);
+  screensize(4)=screensize(4)+36; % hack to recenter text
   
-  DrawFormattedText(w,disptxt,'center','center');
+  DrawFormattedText(w,disptxt,'center','center',[256 256 256], ...
+       [], 0,0,1,0, screensize);
   
   [v,t.onset] = Screen('Flip',w,when);
   t.flanker=flanker;

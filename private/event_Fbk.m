@@ -2,8 +2,16 @@
 % global textures; w=setupScreen([150 150 150], [800 600]);cd ..;textures=getTextures(w); cd private/; event_Fbk(w,GetSecs(),1,1)
 
 function t=event_Fbk(w,when,rewblock,correct)
-  %% set text
-  global textures;
+  
+  %% set textures
+  persistent textures;
+  if isempty(textures) || ( isempty(when) && isempty(rewblock))
+     textures=getTextures(w);
+     if isempty(when) && isempty(rewblock)
+         t=0;
+         return;
+     end
+  end
   
   if correct>0 && rewblock
       centertext='C';%'✔'; 
@@ -64,4 +72,5 @@ function t=event_Fbk(w,when,rewblock,correct)
   
   
   [v,t] = Screen('Flip',w,when);
+  playSnd(type);
 end

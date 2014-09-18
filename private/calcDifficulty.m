@@ -1,7 +1,7 @@
 
 % easy and hard scale. want both at .85
 % diffscale=[hard easy]
-function diffScale = calcDifficulty(prevDiff, isEasy,isCorrect)
+function diffScale = calcDifficulty(prevDiff, hardCorrectRatio, easyCorrectRatio)
   persistent f
   
   idealRatio=.85;
@@ -17,21 +17,11 @@ function diffScale = calcDifficulty(prevDiff, isEasy,isCorrect)
       end
   end
   
-  diffScale=[0 0]; % default
+  diffScale=prevDiff; % default
   % maybe we are initializing
-  if isempty(isCorrect) || length(isCorrect) ~= length(isEasy)
+  if isempty(hardCorrectRatio) || isempty(easyCorrectRatio)
       return
   end
-  
-
-  % break up into hard and easy
-  isCorrectHard = isCorrect(isEasy~=1);
-  isCorrectEasy = isCorrect(isEasy==1);
-  
-  % get count of how many are correct
-  hardCorrectRatio = length( find(isCorrectHard) ) / max(1,length(isCorrectHard));
-  easyCorrectRatio = length( find(isCorrectEasy) ) / max(1,length(isCorrectEasy));
-  fprintf('\t%%cor: %.02f hard %.02f easy\n',hardCorrectRatio,easyCorrectRatio);
 
   
   % set the scales

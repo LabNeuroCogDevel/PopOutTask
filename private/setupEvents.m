@@ -13,7 +13,7 @@
 %         
 %         t.Fbk  = Fbk(w,startime+times(4),rew,correct);
 
-function [eList, manips] = setupEvents(totalTrl,screenResolution,rew)
+function [eList, manips] = setupEvents(totalTrl,rew)
     % total number of trials to get manips for
     % screenResolution to specify rectangle size --this should move...maybe
     % rewardblock?
@@ -36,7 +36,7 @@ function [eList, manips] = setupEvents(totalTrl,screenResolution,rew)
 
     %% manipulations
     % list of easy? (1 or 0) and dir(1 or 2)
-    easys=4; % only 4 will be hard
+    easys=1:4; % only 4 will be hard
     dirs=1:2;  % 1 is left, 2 is right
     manips.val=combvec(dirs,easys)';
     manips.dirIdx=1;
@@ -56,16 +56,18 @@ function [eList, manips] = setupEvents(totalTrl,screenResolution,rew)
     % allow is 1,2, 1=left,2=right == same as dir         
     manips.correctKeys=allow(ckIdx);
 
+    % truncate manips
+    manips.val = manips.val(1:totalTrl,:);
     
     % colored box dimensions
     %[width, height]=Screen('WindowSize', w);
     %screenResolution=[width height];
-    rect= [ screenResolution/2 screenResolution/2 ] + [ -10 -10 10 10 ]; 
+    %rect= [ screenResolution/2 screenResolution/2 ] + [ -10 -10 10 10 ]; 
     
     % size of event list is events*trials -- as long as there are no
     % catchtrials
     
-    eList = cell( length(times)*totalTrl , 1);
+    eList = cell( length(times)*totalTrl +1 , 1);
     
     eidx=0;
     cumtim=0;
@@ -91,7 +93,7 @@ function [eList, manips] = setupEvents(totalTrl,screenResolution,rew)
         %Prb
         eidx=eidx+1;
         endtime=cumtim + eTime.('Prp');
-        eList{eidx} = {trl,@event_Prp,'Prp',cumtim, endtime,rect, easy};
+        eList{eidx} = {trl,@event_Prp,'Prp',cumtim, endtime, easy};
         cumtim=endtime;
         
         %Cue
@@ -114,4 +116,9 @@ function [eList, manips] = setupEvents(totalTrl,screenResolution,rew)
         
         
     end
+    
+    %top it off with an ITI
+    eList{eidx+1} = {totalTrl,@event_ITI,'ITI',...
+                      cumtim+.5,cumtim+.5+eTime.('ITI'), ...
+                      white };
 end

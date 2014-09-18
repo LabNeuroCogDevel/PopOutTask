@@ -15,7 +15,7 @@ function closedown()
     %v=version;
     % global a
     %if(~isempty(a) && str2double(v(1:3))>7.9 )    
-    if PsychPortAudio('GetOpenDeviceCount')
+    if PsychPortAudio('GetOpenDeviceCount')>0
         fprintf('Closeing all Audio\n');
         PsychPortAudio('Close');
     end
