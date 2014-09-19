@@ -25,7 +25,7 @@ function subj = po(varargin)
             baseRT = varargin{3};
             runQuest=0;
             totalTrl=68;
-            totalTrl=4;
+            %totalTrl=4;
             fprintf('not questing\n');
             
         % is practice, finding RT
@@ -46,6 +46,8 @@ function subj = po(varargin)
     % event list -- event_ITI event_Prp event_Cue event_Rsp event_Fbk 
     [eList, manips] = setupEvents(totalTrl,rewblock);
     %  {trl,@func,eventname,starttime, endtime, args};
+    
+    instructions(w);
     
     startime=GetSecs();
     trialInfo=struct(); % we'll build trial info without output of each event
@@ -88,7 +90,10 @@ function subj = po(varargin)
         
         %% the actual event
         % run the event and save struct output into nested struct array
-        
+        nt=GetSecs();
+         fprintf('\t%s @ %.2f \t %.3fs + %.3fs \n', ...
+                eName, estart - startime, nt-startime, estart-nt);
+
         trialInfo(trl).(eName) = func(w, estart, params{:} );
         
           
@@ -132,9 +137,10 @@ function subj = po(varargin)
     end
     
     %% stuff to save
-    subj.trialInfo = trialInfo;
-    subj.events = eList;
-    subj.manips = manips;
+    subj.start      = startime;
+    subj.trialInfo  = trialInfo;
+    subj.events     = eList;
+    subj.manips     = manips;
     subj.idealRTwin = baseRT + trialInfo(end).RTshift;
     save([ID '.mat'],'-struct','subj' );
     

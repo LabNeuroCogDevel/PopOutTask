@@ -1,29 +1,44 @@
 
-for f={'scott','will-retest','julia-retest','david','btc_redo'}
+for f={'scott','will-retest','julia-retest','david','btc_redo','bart-retest','sam-retest','r-retest-ACTUAL'}
   fl=regexprep(f{1},'-','_');
-  pep.(fl)=plotResults(load(f{1})); close all;
+  pep.(fl)=plotResults(load(['mats/' f{1}])); close all;
 end
 
 %%
 colors='bgkcmy';
+lt    ={'-',':','-.','--'};
 hold on; 
-title('Sorted RT  for Incongruent Trials');
+title('Sorted RT for Incongruent Trials');
 xlabel trial
 ylabel RT(s)
 
-ci=1;
-for fl=fieldnames(pep)';
-  a=pep.(fl{1});
-  m = [ a.RT(isfinite(a.RT)&~a.easy) a.Rsp(isfinite(a.RT)&~a.easy) ]; [~,i]=sort(m(:,1)); x=m(i,:);
-  pep.(fl{1}).incogRT=x;
+
+ fl=fieldnames(pep)';
+for i=1:length(fl)
+  a=pep.(fl{i});
+  m = [ a.RT(isfinite(a.RT)&~a.easy) a.Rsp(isfinite(a.RT)&~a.easy) ]; [~,si]=sort(m(:,1)); x=m(si,:);
+  pep.(fl{i}).incogRT=x;
   incor=find(~x(:,2));
   
-  c = ['-' colors(ci)]; 
-  h(ci)= plot(x(:,1),c);
+  ci=mod(i-1,length(colors))+1;
+  lti=mod(i-1,length(lt))+1;
+  c = [lt{lti} colors(ci)]; 
+  h(i)= plot(x(:,1),c);
   
-  ci=mod(ci,length(colors))+1;
   
   plot(incor,x(incor,1),'*r');
+  
+  
+  res(i,:) = [ length(find(a.Rsp(~~a.easy)==1))/length(find(~~a.easy))
+          max(a.RT(isfinite(a.RT)&~a.easy))
+          mean(a.RT(isfinite(a.RT)&~a.easy))
+          length(find(~isfinite(a.RT)&~a.easy))
+          length(find(~a.easy)) 
+          ]';
+   disp(fl{i});
+   disp(res(i,:));        
 end
 
-%legend(h,fieldnames(pep))
+legend(h,fieldnames(pep))
+
+
