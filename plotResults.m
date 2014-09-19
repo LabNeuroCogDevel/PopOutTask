@@ -1,4 +1,4 @@
-function plotResults(r)
+function s = plotResults(r)
 
    % truncate manips if too long
    totalTrl = length(r.trialInfo);
@@ -11,12 +11,12 @@ function plotResults(r)
    RT(~isfinite(RT)) = NaN;
 
    %ratio   = reshape([NaN NaN r.trialInfo.ratios],length(r.trialInfo),2);
-   RTshift = [r.trialInfo.RTshift];
+   RTshift = [NaN r.trialInfo.RTshift];
    
-   RspColor= [ 256 0   0  ; ... -1 -> wrong
-               0   0   256; ...  0 -> tooslow
-               0   256 0  ];...  1 -> correct
-   
+%    RspColor= [ 256 0   0  ; ... -1 -> wrong
+%                0   0   256; ...  0 -> tooslow
+%                0   256 0  ];...  1 -> correct
+%    
 %    subplot(3,1,1);
 %       %plot(ratio);
 %       hold on
@@ -24,15 +24,46 @@ function plotResults(r)
 %       %scatter(1:totalTrl,easy,3,easy);
 
 %       legend ({'rH','rE'});
+
+  corIdx=find(Rsp==1);
+  errIdx=find(Rsp==0);
+  misIdx=find(Rsp==-1);
+  
+  hardIdx=find(~easy);
    subplot(2,1,1);
+      title RTshift;
+      ylabel shift(s);
+      xlabel trial;
+      hold on;
       plot(RTshift);
-      legend({'tH','tE'});
+      plot(corIdx,RTshift(corIdx),'g*');
+      plot(errIdx,RTshift(errIdx),'r*');
+      plot(misIdx,RTshift(misIdx),'m*');
+      
+      plot(hardIdx,RTshift(hardIdx),'ko');
+
+      legend({'RTwindow', 'Correct','Incorrect','Missed','incong'});
       
    subplot(2,1,2);
-      plot(RT);
+      title RT;
+      ylabel RT(s);
+      xlabel trial;
       hold on;
-      plot(Rsp,'m*');
-      scatter(1:totalTrl,easy,3,easy);
-      legend Rsp RT Rsp easy;
+      plot(RT);
+      
+      plot(corIdx,RT(corIdx),'g*');
+      plot(errIdx,RT(errIdx),'r*');
+      plot(misIdx,RT(misIdx),'m*');
+      
+      plot(hardIdx,RT(hardIdx),'ko');
 
+      legend RT Correct Incorrect Missed incong;
+
+      acc = sum(Rsp(~easy)==1)/length(find(~easy));
+      fprintf('Accuracy: %.3f\n', acc )
+      
+  
+   s.RT = RT; s.Rsp=Rsp; s.easy = easy;
+   s.inc_acc=acc;
+   
 end
