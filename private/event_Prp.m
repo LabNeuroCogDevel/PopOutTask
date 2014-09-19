@@ -1,6 +1,6 @@
 
 function t=event_Prp(w,when,congr)
-
+  t.ideal=when;
   
   width=20;  % How big is the box?
   [cx,cy] = RectCenter(Screen('Rect',w));
@@ -11,6 +11,7 @@ function t=event_Prp(w,when,congr)
   else
       Screen('FillRect',w,[ 255 0 0],rect);
   end
-  [v,t] = Screen('Flip',w,when);
+  [v,t.onset] = Screen('Flip',w,when);
+  t.congr=congr;
 end
 

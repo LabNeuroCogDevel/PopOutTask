@@ -2,13 +2,13 @@
 % global textures; w=setupScreen([150 150 150], [800 600]);cd ..;textures=getTextures(w); cd private/; event_Fbk(w,GetSecs(),1,1)
 
 function t=event_Fbk(w,when,rewblock,correct)
-  
+  t.ideal=when;
   %% set textures
   persistent textures;
   if isempty(textures) || ( isempty(when) && isempty(rewblock))
      textures=getTextures(w);
      if isempty(when) && isempty(rewblock)
-         t=0;
+         t.onset=0;
          return;
      end
   end
@@ -71,6 +71,6 @@ function t=event_Fbk(w,when,rewblock,correct)
   
   
   
-  [v,t] = Screen('Flip',w,when);
+  [v,t.onset] = Screen('Flip',w,when);
   playSnd(type);
 end

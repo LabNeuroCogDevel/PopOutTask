@@ -1,5 +1,18 @@
 
-function r=event_Rsp(w,maxtime,correctKey,allow)
+%
+% wait for an allowed keypress until max time 
+% check against correctKey 
+%
+% if varargin, do not accept keypresses until varargin{1}
+%   use direction of varargin{2}
+%
+function r=event_Rsp(w,maxtime,correctKey,allow,varargin)
+ 
+ if length(varargin)==2;
+     t=event_Cue(w,varargin{1},varargin{2},256*[1 1 1]);
+     r.display_onset = t.onset;
+ end
+ 
  initTime=GetSecs();
  RT=initTime;
  keyCode=zeros(256,1);

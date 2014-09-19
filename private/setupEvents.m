@@ -22,7 +22,7 @@ function [eList, manips] = setupEvents(totalTrl,rew)
     white=255.*[1 1 1];
     black=[0 0 0];
     % what keys can we use
-    allow=KbName({'1!','2@','escape'});
+    allow=KbName({'1!','0)','escape'});
 
     %% possible events and their timing
     eventOrder={'ITI','Prp','Cue','Fbk'};
