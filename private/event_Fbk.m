@@ -1,7 +1,7 @@
 % testing 
 % global textures; w=setupScreen([150 150 150], [800 600]);cd ..;textures=getTextures(w); cd private/; event_Fbk(w,GetSecs(),1,1)
 
-function t=event_Fbk(w,when,rewblock,correct)
+function t=event_Fbk(w,when,rewblock,rewtype, correct)
   t.ideal=when;
   %% set textures
   persistent textures;
@@ -14,24 +14,19 @@ function t=event_Fbk(w,when,rewblock,correct)
   end
   
   if correct>0 && rewblock
-      centertext='C';%'✔'; 
-      ringtext  ='$';
-      color=[0 256 0];
       type='crt';
 
   elseif correct<1 && rewblock % error on reward, or too slow
-      centertext='x';%'✖';
-      ringtext  ='#';
-      color=[256 0  0];
       type='wrg';
       
   else % rewblock == 0 
-      centertext='+';
-      ringtext='#'; 
-      color=[0 0 255];
-      type='neu'
+      type='neu';
   end
   
+  % make crt crt_norew if we aren't rewarding this time
+  if rewblock~=0 && correct>0 && rewtype~=1 
+      type=[type '_norew' ];
+  end
   
     
   %% draw

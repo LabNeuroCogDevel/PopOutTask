@@ -38,27 +38,100 @@ function [eList, manips] = setupEvents(totalTrl,rew)
     % list of easy? (1 or 0) and dir(1 or 2)
     easys=1:4; % only 4 will be hard
     dirs=1:2;  % 1 is left, 2 is right
-    manips.val=combvec(dirs,easys)';
     manips.dirIdx=1;
     manips.easyIdx=2;
+    
+    
+    %manips.val=combvec(dirs,easys)';
+    combs=combvec(dirs,easys)';
+    combs(:,manips.easyIdx)=combs(:,manips.easyIdx)<4;
+    
+    repcount=1;
+    
 
-    manips.val=Shuffle(repmat(manips.val,ceil(totalTrl/size(manips.val,1)),1));
-    manips.val(:,manips.easyIdx)=manips.val(:,manips.easyIdx)<4;
-    % easy dir keyidx
-    % 0     1     2
-    % 0     2     1
-    % 1     1     1
-    % 1     2     2
-    ckIdx = mod( ...
-                 manips.val(:,manips.easyIdx) ...
-               + manips.val(:,manips.dirIdx),  ...
-               2 ) +1 ;
-    % allow is 1,2, 1=left,2=right == same as dir         
-    manips.correctKeys=allow(ckIdx);
 
+    % super slow if we dont shuffle in peices
+    %  we'll do sets of `ntc` total combinations
+    ntc=4;
+    peiceSize=length(combs)*ntc;
+    nPeices = ceil( totalTrl/peiceSize );
+    overshootsize=nPeices * peiceSize;
+    manips.val=zeros( overshootsize, size(combs,2));
+    
+    for peice=1:nPeices
+        s=(peice-1)*peiceSize +1;
+        e=peice*peiceSize;
+        % want to minimize what is chopped off (limit asymetry)
+        % but still need to be in intervals of length(combs)
+        if(e>totalTrl)
+            e= ceil(totalTrl/length(combs))*length(combs);
+            ntc=(e-s+1)/length(combs);
+        end
+        
+        idealOrderMet=0;
+        while ~idealOrderMet
+            manips.val(s:e,:)=repmat(combs,ntc,1);
+            manips.val(s:e,:)=manips.val( Shuffle(s:e), :);
+
+            ckIdx = mod( ...
+                         manips.val(s:e,manips.easyIdx) ...
+                       + manips.val(s:e,manips.dirIdx),  ...
+                       2 ) +1 ;
+            % allow is 1,2, 1=left,2=right == same as dir         
+            manips.correctKeys(s:e)=allow(ckIdx);
+
+            % easy dir keyidx
+            % 0     1     2
+            % 0     2     1
+            % 1     1     1
+            % 1     2     2
+
+
+            %% check that everything is ideal 
+            limits = { ...
+            ... limit name  ,  vector                     , max count, cant be
+              {'incong.'    , manips.val(s:e,manips.easyIdx), 1        , 0} ...
+              {'directions' , manips.val(s:e,manips.dirIdx) , 3 } ...
+              {'key presses', manips.correctKeys(s:e)       , 3 } ...
+             };
+
+            for l=1:length(limits)
+                r=rle(limits{l}{2});
+                inarow = r{1}(r{2}>limits{l}{3});
+                % looking at somethign specific
+                if length(limits{l})>3
+                    bad=length(find(inarow==limits{l}{4}));
+                else
+                    bad=length(find(inarow));
+                end
+
+                if bad>0
+                    idealOrderMet=0;
+
+                    if mod(repcount,1000)==0
+                      fprintf('Events: consec. %s >%d (rep %d)\n',...
+                           limits{l}{1},limits{l}{3}, repcount);
+                    end
+                    break;
+                else
+                    idealOrderMet=1;
+                end
+            end
+
+            repcount=repcount+1;
+
+        end
+        
+    end
+    
+    
     % truncate manips
     manips.val = manips.val(1:totalTrl,:);
     
+    % breakdown of occurances:
+    %[a,b,c]=unique(manips.val,'rows'); [d,e]=histc(c,1:length(b)); [d a],
+    
+    %% reformat data for easy structural references
     % colored box dimensions
     %[width, height]=Screen('WindowSize', w);
     %screenResolution=[width height];

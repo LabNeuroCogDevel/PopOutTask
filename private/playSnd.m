@@ -10,6 +10,7 @@ function t=playSnd(varargin)
     snds.crt = getwave('snd/cash.wav');
     snds.wrg = getwave('snd/171524__fins__error.wav');
     snds.neu = getwave('snd/178186__snapper4298__camera-click-nikon.wav');
+    snds.crt_norew = snds.neu;
   end
   
   % no input means initializing

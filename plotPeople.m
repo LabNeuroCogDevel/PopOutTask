@@ -1,5 +1,5 @@
 
-for f={'scott','will-retest','julia-retest','david','btc_redo','bart-retest','sam-retest','r-retest-ACTUAL'}
+for f={'scott','will-retest','julia-retest','david','btc-retest','bart-retest','sam-retest','r-retest-ACTUAL','btc-retest'}
   fl=regexprep(f{1},'-','_');
   pep.(fl)=plotResults(load(['mats/' f{1}])); close all;
 end

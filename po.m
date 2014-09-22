@@ -16,6 +16,8 @@ function subj = po(varargin)
 
     %totalTrl=2;
     
+    %% REWARD OR NEUTRAL
+    % Quest or no Quest
     if ~isempty(varargin)
         ID = varargin{1};
         rewblock=varargin{2}; % 0 or 1
@@ -43,6 +45,9 @@ function subj = po(varargin)
         % not practice, have an RT
         error('give me some input');
     end
+    
+    
+    %% Setup events
     % event list -- event_ITI event_Prp event_Cue event_Rsp event_Fbk 
     [eList, manips] = setupEvents(totalTrl,rewblock);
     %  {trl,@func,eventname,starttime, endtime, args};
@@ -79,22 +84,32 @@ function subj = po(varargin)
         
         %% EVENT SPECIFIC CONSIDERATIONS
         % * feedback depend on if Rsp was correct or not
-        % * Cue needs to be scaled by performance
+        % - Cue no longer needs to be scaled by performance
         
                 
-        % Fbk needs correct value
+        % Fbk needs correct value, and if this is quest
         if strmatch(eName,'Fbk')
            estart=GetSecs(); % start feedback right away (after Rsp)
-           params = [ params, {trialInfo(trl).Rsp.correct} ];  
+           params = [ params, runQuest==0, {trialInfo(trl).Rsp.correct} ];  
         end
+        
+        %% print timing
+        nt=GetSecs();
+        fprintf('\t%s @ %.2f \t %.3fs + %.3fs \n', ...
+                eName, estart - startime, nt-startime, estart-nt);
+        
+            
+            
+        
         
         %% the actual event
         % run the event and save struct output into nested struct array
-        nt=GetSecs();
-         fprintf('\t%s @ %.2f \t %.3fs + %.3fs \n', ...
-                eName, estart - startime, nt-startime, estart-nt);
-
         trialInfo(trl).(eName) = func(w, estart, params{:} );
+        
+        
+        
+        
+        
         
           
         %% per trial calculations
