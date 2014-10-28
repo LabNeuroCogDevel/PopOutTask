@@ -1,0 +1,60 @@
+optseq2
+$Id: optseq2.c,v 2.21.2.1 2011/04/21 19:50:06 greve Exp $
+NoSearch  = 0
+nSearch  = 1000
+nKeep    = 4
+PctUpdate  = 10.000000
+nCB1Opt  = 0
+seed     = 796919
+Ntp  = 240
+TR   = 1
+TPreScan   = 0
+PSD Window   = 0 20 0.2
+nEvTypes = 2
+EvNo    Label Duration nRepsNom
+ 1     incong  1.500   24
+ 2       cong  1.500   72
+PctVarEvReps = 0
+VarEvRepsPerCond = 0
+PolyOrder = -1
+tNullMax = -1
+tNullMin = 0.3
+AR1 = 0
+No refractory penalty
+Cost = eff
+OutStem = test
+Summary File = test.sum
+
+
+
+
+Searched 1000 iterations for 0.009444 hours
+Rate: 29.4118 iterations per second
+INFO: 715/1000 schedules were ill-conditioned 
+Number of iterations since last substitution 119
+Cost Avg/Std: 0.0042305 0.0008594
+Max Eff Encountered:    0.00608302
+Max VRFAvg Encountered: 1.58825
+Eff of Nominal Ideal XtX: 0.280756
+
+Rank     Cost   ZCost NthIter  Eff   CB1Err   VRFAvg VRFStd VRFMin VRFMax VRFRng IXtXErr  
+  1    0.0061   2.156   412   0.006 0.162037   1.45   0.57   0.43   2.85   2.42   56240.34
+  2    0.0060   2.066   590   0.006 0.134259   1.51   0.74   0.54   3.62   3.07   56267.70
+  3    0.0060   2.004   117   0.006 0.282407   1.51   0.68   0.33   3.52   3.18   55979.45
+  4    0.0057   1.657   131   0.006 0.013889   1.42   0.63   0.34   3.83   3.48   55416.63
+
+Ideal CB1 PMtx--------------------------
+ 0.250   0.750;
+ 0.250   0.750;
+Schedule 1 CB1 PMtx--------------------------
+ 0.333   0.667;
+ 0.208   0.778;
+Schedule 2 CB1 PMtx--------------------------
+ 0.167   0.792;
+ 0.278   0.722;
+Schedule 3 CB1 PMtx--------------------------
+ 0.083   0.917;
+ 0.292   0.694;
+Schedule 4 CB1 PMtx--------------------------
+ 0.250   0.708;
+ 0.250   0.750;

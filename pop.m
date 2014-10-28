@@ -1,5 +1,5 @@
 % po(rew=0|1) - popout Task rewarded block or not
-function subj = po(varargin) 
+function subj = pop(varargin) 
     screenResolution=[1600 1200];
     backgroundColor=256/2*[1 1 1];
 
@@ -48,8 +48,10 @@ function subj = po(varargin)
     
     
     %% Setup events
+    fname='optseq/test-001.par';
     % event list -- event_ITI event_Prp event_Cue event_Rsp event_Fbk 
-    [eList, manips] = setupEvents(totalTrl,rewblock);
+    %[eList, manips] = setupEvents(totalTrl,rewblock);
+    [eList, manips] = readEvents(fname,rewblock)
     %  {trl,@func,eventname,starttime, endtime, args};
     
     instructions(w);

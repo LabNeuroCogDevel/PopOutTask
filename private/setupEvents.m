@@ -57,7 +57,12 @@ function [eList, manips] = setupEvents(totalTrl,rew)
     nPeices = ceil( totalTrl/peiceSize );
     overshootsize=nPeices * peiceSize;
     manips.val=zeros( overshootsize, size(combs,2));
-    
+
+    %
+    % if one bin ends with eg 3 in a row
+    % and the next starts with 3 in a row
+    %  -- we exceed quotas
+    %
     for peice=1:nPeices
         s=(peice-1)*peiceSize +1;
         e=peice*peiceSize;

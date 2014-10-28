@@ -1,0 +1,8 @@
+/home/foranw/bin/bin/optseq2 \
+  --tr 1 --tnullmin .3  \
+  --ntp 240 \
+  --psdwin 0 20 .2 \
+  --ev incong 1.5 24  \
+  --ev cong 1.5 72 \
+  --nsearch 1000 --nkeep 4 \
+  --o test
