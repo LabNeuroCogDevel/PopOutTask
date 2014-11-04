@@ -2,7 +2,6 @@ function set=popSettings()
 
 persistent s;
 if isempty(s)
-     KbName('UnifyKeyNames');
      
      %% number of trials
      s.ntrials.quest    = 200;
@@ -14,6 +13,7 @@ if isempty(s)
      s.screen.bgColor=256/2*[1 1 1];
 
      %% keys -- what keys can we use
+     KbName('UnifyKeyNames');
      s.keys = KbName({'1!','0)','escape'});
      
      %% timing

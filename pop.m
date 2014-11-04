@@ -1,21 +1,13 @@
-% po(rew=0|1) - popout Task rewarded block or not
+% po(ID,rew=0|1,[RTwin]) - popout Task rewarded block or not
+%%% Examples
+% po('Test',1)     --"quest"   find optimal RT window
+% po('Test',1,.54) --"reward"  use optimal RT window in rewarded block      
+% po('Test',0,.54) --"neutral" use optimal RT window in sensory-motor block 
+% po('Test',0)     --"cruel"   NOT ALLOWED -- quest without feedback
 function subj = pop(varargin) % pop(ID,rew?,RTwin)
-    s = popSettings();
 
-    % setup the screen, font size and blending
-    w=setupScreen(s.screen.bgColor,s.screen.res);
-
-    % get textures from images (persistent in fuction)
-    event_Fbk(w,[],[],[]);
-    % similair for sounds, also initialize psych sounds;
-    playSnd(); 
-    
-    
-    % total number of trials
-
-    %totalTrl=2;
-    
-    %% REWARD OR NEUTRAL
+    %% Parse input   
+    % REWARD OR NEUTRAL
     % Quest or no Quest
     if ~isempty(varargin)
         ID = varargin{1};
@@ -36,12 +28,34 @@ function subj = pop(varargin) % pop(ID,rew?,RTwin)
         end
 
     else
-        
-        ID=[ date '_' num2str(now) ];
-        rewblock=1;
         % not practice, have an RT
-        error('pop(ID,rew,RTwin)');
+        error('usage: pop(ID,rew,RTwin)');
     end
+    
+    % determin runtype, dont allow quest+neutral
+    if runQuest
+        runtype='quest';
+        if ~rewblock
+            error('you are running quest without rewards. Make your 0 a 1')
+        end
+    elseif rewblock
+        runtype='reward';
+    else
+        runtype='neutral';
+    end
+    
+    
+    %% PTB SETUP
+    s = popSettings();
+
+    % setup the screen, font size and blending
+    w=setupScreen(s.screen.bgColor,s.screen.res);
+
+    % get textures from images (persistent in fuction)
+    event_Fbk(w,[],[],[]);
+    % similair for sounds, also initialize psych sounds;
+    playSnd(); 
+    
     
     
     %% Setup events
@@ -157,7 +171,12 @@ function subj = pop(varargin) % pop(ID,rew?,RTwin)
     subj.events     = eList;
     subj.manips     = manips;
     subj.idealRTwin = baseRT + trialInfo(end).RTshift;
-    save([ID '.mat'],'-struct','subj' );
+    
+    
+    
+    
+    fname=['subj/' ID '_'  runtype '_' date '_' num2str(now) '.mat'];
+    save(fname,'-struct','subj' );
     
     
     %% draw done screen
