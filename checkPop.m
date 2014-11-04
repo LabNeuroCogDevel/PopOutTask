@@ -11,7 +11,7 @@ classdef checkPop < matlab.unittest.TestCase
         %% read in events
         function testReadEvents(tc)
             expCogRatio=0.75; % how many trials should be congruent?
-            fname='optseq/test-001.par';
+            fname='optseq/rew-001.par';
             rew=1;
             [e, m] = readEvents(fname,rew);
             
