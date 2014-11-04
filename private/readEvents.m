@@ -22,14 +22,20 @@ function [eList, manips] = readEvents(fname,rew)
     white=255.*[1 1 1];
     black=[0 0 0];
     % what keys can we use
-    allow=KbName({'1!','0)','escape'});
+    s=popSettings();
+    
+    % what keys can we use
+    allow=s.keys;% allow=KbName({'1!','0)','escape'});
 
     %% possible events and their timing
-    eventOrder={'ITI','Prp','Cue','Fbk'};
-    eTime.ITI=1.0;
-    eTime.Prp=0.5;
-    eTime.Cue=0.5;
-    eTime.Fbk=0.5;
+    %eventOrder={'ITI','Prp','Cue','Fbk'};
+    %eTime.ITI=1.0;
+    %eTime.Prp=0.5;
+    %eTime.Cue=0.5;
+    %eTime.Fbk=0.5;
+    eTime=s.timing;
+    eventOrder=s.order;
+    
     times = cumsum(cellfun(@(x) (eTime.(x)), eventOrder));
     
      
@@ -81,6 +87,8 @@ function [eList, manips] = readEvents(fname,rew)
         toomanyinarow = any(r{1}(r{2}>maxinarow));
     end
     
+    % cong|incog is 1|2; want 1|0
+    manips.val(:,manips.easyIdx)=~( manips.val(:,manips.easyIdx) -1 );
     
     % breakdown of occurances:
     %[a,b,c]=unique(manips.val,'rows'); [d,e]=histc(c,1:length(b)); [d a],

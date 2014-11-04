@@ -13,7 +13,7 @@
 %         
 %         t.Fbk  = Fbk(w,startime+times(4),rew,correct);
 
-function [eList, manips] = setupEvents(totalTrl,rew)
+function [eList, manips] = genEvents(totalTrl,rew)
     % total number of trials to get manips for
     % screenResolution to specify rectangle size --this should move...maybe
     % rewardblock?
@@ -21,15 +21,24 @@ function [eList, manips] = setupEvents(totalTrl,rew)
     %% settings
     white=255.*[1 1 1];
     black=[0 0 0];
-    % what keys can we use
-    allow=KbName({'1!','0)','escape'});
 
+    s=popSettings();
+    
+    % what keys can we use
+    allow=s.keys;% allow=KbName({'1!','0)','escape'});
+    
     %% possible events and their timing
-    eventOrder={'ITI','Prp','Cue','Fbk'};
-    eTime.ITI=1.0;
-    eTime.Prp=0.5;
-    eTime.Cue=0.5;
-    eTime.Fbk=0.5;
+    %eventOrder={'ITI','Prp','Cue','Fbk'};
+    %eTime.ITI=1.0;
+    %eTime.Prp=0.5;
+    %eTime.Cue=0.5;
+    %eTime.Fbk=0.5;
+    
+
+    
+    eTime=s.timing;
+    eventOrder=s.order;
+    
     times = cumsum(cellfun(@(x) (eTime.(x)), eventOrder));
     
      

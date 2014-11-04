@@ -1,8 +1,46 @@
-/home/foranw/bin/bin/optseq2 \
-  --tr 1 --tnullmin .3  \
-  --ntp 240 \
+#!/usr/bin/env perl
+use strict; use warnings;
+use feature "say";
+
+# get cong and incong numbers given trial time and % incong
+sub getNums {
+ my ($partIncong,$totalTime,$trlTime)=@_;       # .25,240,2.5
+ my $nTot=sprintf('%.0f',$totalTime/$trlTime);  # 96
+ my $nIncong=sprintf('%.0f',$nTot*$partIncong); # 24
+ my $nCong=$nTot - $nIncong;                    # 72
+ 
+ say "# $nTot ($nIncong incog [$partIncong] + $nCong cog) * $trlTime s = $totalTime";
+
+ # return hash ref of calculated values
+ return {nTot=>$nTot, nCong=>$nCong, nIncong=>$nIncong}
+}
+
+my $TR=1;
+my $trltime=1.5;
+my $ititime=1;
+my $totaltime=240;
+my $ntp = sprintf('%.0f',$totaltime/$TR);
+
+my %nums=%{getNums(.25,$totaltime,$trltime+$ititime)};
+
+say "/home/foranw/bin/bin/optseq2 \
+  --tr $TR --tnullmin .3  \
+  --ntp $ntp \
   --psdwin 0 20 .2 \
-  --ev incong 1.5 24  \
-  --ev cong 1.5 72 \
+  --ev incong $trltime $nums{nIncong}  \
+  --ev cong $trltime $nums{nCong} \
   --nsearch 1000 --nkeep 4 \
-  --o test
+  --o rew";
+
+say "\n";
+#$totaltime=100;
+#$ntp = sprintf('%.0f',$totaltime/$TR);
+%nums=%{getNums(0,$totaltime,$trltime+$ititime)};
+say "/home/foranw/bin/bin/optseq2 \
+  --tr $TR --tnullmin .3  \
+  --ntp $ntp \
+  --psdwin 0 20 .2 \
+  --ev cong $trltime $nums{nIncong} \
+  --nsearch 1000 --nkeep 4 \
+  --o congOnly ";
+

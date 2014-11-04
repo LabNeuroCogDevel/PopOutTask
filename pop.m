@@ -1,10 +1,9 @@
 % po(rew=0|1) - popout Task rewarded block or not
-function subj = pop(varargin) 
-    screenResolution=[1600 1200];
-    backgroundColor=256/2*[1 1 1];
+function subj = pop(varargin) % pop(ID,rew?,RTwin)
+    s = popSettings();
 
     % setup the screen, font size and blending
-    w=setupScreen(backgroundColor,screenResolution);
+    w=setupScreen(s.screen.bgColor,s.screen.res);
 
     % get textures from images (persistent in fuction)
     event_Fbk(w,[],[],[]);
@@ -26,7 +25,6 @@ function subj = pop(varargin)
         if(length(varargin)>2)
             baseRT = varargin{3};
             runQuest=0;
-            totalTrl=68;
             %totalTrl=4;
             fprintf('not questing\n');
             
@@ -35,7 +33,6 @@ function subj = pop(varargin)
             fprintf('questing!\n');
             baseRT=.5;
             runQuest=1;
-            totalTrl=200;
         end
 
     else
@@ -43,16 +40,14 @@ function subj = pop(varargin)
         ID=[ date '_' num2str(now) ];
         rewblock=1;
         % not practice, have an RT
-        error('give me some input');
+        error('pop(ID,rew,RTwin)');
     end
     
     
     %% Setup events
-    fname='optseq/test-001.par';
-    % event list -- event_ITI event_Prp event_Cue event_Rsp event_Fbk 
-    %[eList, manips] = setupEvents(totalTrl,rewblock);
-    [eList, manips] = readEvents(fname,rewblock)
-    %  {trl,@func,eventname,starttime, endtime, args};
+    % uses either readEvents or setupEvents dep. on quest and rew
+    [eList, manips] = getEvents(rewblock,runQuest);
+    %  eList like:  {trl,@func,eventname,starttime, endtime, args};
     
     instructions(w);
     
@@ -73,7 +68,7 @@ function subj = pop(varargin)
     %% go through each event we are running
     for eidx=firstEvent:lastEvent
         
-        %% name event variables
+        %% EVENT INFO
         evt=eList{eidx}; 
         % eList for this event has all the info we need to display an event
         trl= evt{1};     % which trial the event is a part of
@@ -84,27 +79,30 @@ function subj = pop(varargin)
         params=evt(6:length(evt)); % parameters to pass to the event func
 
         
+        
         %% EVENT SPECIFIC CONSIDERATIONS
         % * feedback depend on if Rsp was correct or not
+        % - Probe (colors square) should always be cong in neutral
+        %    handled by input
         % - Cue no longer needs to be scaled by performance
         
                 
         % Fbk needs correct value, and if this is quest
-        if strmatch(eName,'Fbk')
+        if strncmp(eName,'Fbk',3)
            estart=GetSecs(); % start feedback right away (after Rsp)
            params = [ params, runQuest==0, {trialInfo(trl).Rsp.correct} ];  
         end
         
-        %% print timing
+        
+        
+        
+        %% PRINT TIME
         nt=GetSecs();
         fprintf('\t%s @ %.2f \t %.3fs + %.3fs \n', ...
                 eName, estart - startime, nt-startime, estart-nt);
         
             
-            
-        
-        
-        %% the actual event
+        %% RUN EVENT
         % run the event and save struct output into nested struct array
         trialInfo(trl).(eName) = func(w, estart, params{:} );
         
@@ -114,7 +112,7 @@ function subj = pop(varargin)
         
         
           
-        %% per trial calculations
+        %% CALCULATIONS
         % set difficulty using # correct and if it was easy or not
         % NOTE: this uses only between firstEvent and trl
         %       no support for an initial setting
@@ -153,7 +151,7 @@ function subj = pop(varargin)
         
     end
     
-    %% stuff to save
+    %% SAVE AT END
     subj.start      = startime;
     subj.trialInfo  = trialInfo;
     subj.events     = eList;
