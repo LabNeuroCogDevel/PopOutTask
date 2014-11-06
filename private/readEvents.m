@@ -19,10 +19,12 @@ function [eList, manips] = readEvents(fname,rew)
     % rewardblock?
 
     %% settings
-    white=255.*[1 1 1];
-    black=[0 0 0];
-    % what keys can we use
+
+    % settings like what keys can we use, what colors are things
     s=popSettings();
+    
+    % ITI fix color
+    ITIcolor=s.color.fix;
     
     % what keys can we use
     allow=s.keys;% allow=KbName({'1!','0)','escape'});
@@ -113,7 +115,7 @@ function [eList, manips] = readEvents(fname,rew)
         % ITI fix
         if strncmp(ts{tsi.name}{nf},'NULL',4)
             eidx=eidx+1;
-            eList{eidx} = {trl,@event_ITI,'ITI',onset, onset+eTime.ITI, white};
+            eList{eidx} = {trl,@event_ITI,'ITI',onset, onset+eTime.ITI, ITIcolor};
             continue
         end
        

@@ -44,6 +44,9 @@ function subj = pop(varargin) % pop(ID,rew?,RTwin)
         runtype='neutral';
     end
     
+    % record things (saved later)
+    subj.runtype=runtype;
+    subj.id=ID;
     
     %% PTB SETUP
     s = popSettings();
@@ -186,7 +189,11 @@ function subj = pop(varargin) % pop(ID,rew?,RTwin)
     
     %% finish up
     closedown();
-    plotResults(subj);
+    if strncmp(runtype,'quest',5)
+     plotResults(subj);
+    else
+     scorePop(fname)
+    end
     
     fprintf('====\nideal RT: %.3f\n===\n',subj.idealRTwin);
 

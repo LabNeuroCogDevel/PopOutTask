@@ -6,7 +6,7 @@ function writeCSV
  
  fid=fopen('txt/tests.txt','w');
  %header
- fprintf(fid,'subj type run# trial# congr# correct RT\n');
+ fprintf(fid,'subj type run trial congr correct RT\n');
  for i=1:length(prefixes)
    writeCSVwPrefix(prefixes{i},rootdir,fid)
  end
@@ -17,8 +17,9 @@ end
 function writeCSVwPrefix(prefix,rootdir,fid)
 
   paren=@(x,varargin) x(varargin{:});
-  
-  files=arrayfun(@(x) x.name,dir([rootdir '/' prefix '*']),'UniformOutput',0);
+  filelist=[ dir([rootdir '/*' prefix '*_reward_*mat']); 
+             dir([rootdir '/*' prefix '*_neutral_*.mat']) ];
+  files=arrayfun(@(x) x.name,filelist,'UniformOutput',0);
   
   % extract "now" time from mat file to get order
   dates=arrayfun(@(x) strrep(paren(fliplr(strsplit(x{1},'_')),1),'.mat',''), files');

@@ -1,7 +1,7 @@
 % testing 
 % global textures; w=setupScreen([150 150 150], [800 600]);cd ..;textures=getTextures(w); cd private/; event_Fbk(w,GetSecs(),1,1)
 
-function t=event_Fbk(w,when,rewblock,rewtype, correct)
+function t=event_Fbk(w,when,rewblock,rewtype, correct,varargin)
   t.ideal=when;
   %% set textures
   persistent textures;
@@ -43,6 +43,7 @@ function t=event_Fbk(w,when,rewblock,rewtype, correct)
   Screen('DrawTexture', w,  textures.cnt.(type),[],destrect );
   
   
+  
   % Draw ring of images
   nInRing=6; % how many figs in the ring?
 
@@ -64,8 +65,13 @@ function t=event_Fbk(w,when,rewblock,rewtype, correct)
       Screen('DrawTexture', w,  textures.rng.(type), [], destrect )
   end
   
-  
+  % record what image and sound we displayed
+  t.fbktype=type;
   
   [v,t.onset] = Screen('Flip',w,when);
-  playSnd(type);
+  
+  % dont play sounds if we gave 'nosnd' option in varargin
+  if isempty(varargin) || ~strncmp('nosnd',varargin{1},5) 
+    t.audioonset=playSnd(type);
+  end
 end

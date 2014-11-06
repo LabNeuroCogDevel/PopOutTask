@@ -13,11 +13,12 @@ function [eList, manips] = getEvents(rewblock,quest)
       [eList, manips] = genEvents(s.ntrials.quest,rewblock);
   else
      if rewblock
-       fname='optseq/rew-001.par';
-       ntrl=s.ntrials.test;
+       fname=s.seqfile.rew; %'optseq/rew-001.par';
+       ntrl=s.ntrials.rew;
      else
-       fname='optseq/congOnly-001.par';
-       ntrl=s.ntrials.congonly;
+   
+       fname=s.seqfile.neut; %'optseq/rew-001.par'; % 'optseq/congOnly-001.par';
+       ntrl=s.ntrials.neut;
      end
      
      [eList, manips] = readEvents(fname,rewblock);
@@ -28,7 +29,5 @@ function [eList, manips] = getEvents(rewblock,quest)
              ntrlRead,ntrl);
      end
   end
-  
-  
   
 end

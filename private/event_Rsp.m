@@ -5,7 +5,9 @@
 %
 % if varargin, do not accept keypresses until varargin{1}
 %   use direction of varargin{2}
-%
+% @ time varargin{1}, cue color would change and subject would be allowed
+%   to respond
+
 function r=event_Rsp(w,maxtime,correctKey,allow,varargin)
  
  if length(varargin)==2;
