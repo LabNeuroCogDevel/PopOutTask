@@ -41,7 +41,7 @@ function subj = pop(varargin) % pop(ID,rew?,RTwin)
     elseif rewblock
         runtype='reward';
     else
-        runtype='neutral';
+        runtype='neutralIncong';
     end
     
     % record things (saved later)
@@ -106,8 +106,22 @@ function subj = pop(varargin) % pop(ID,rew?,RTwin)
                 
         % Fbk needs correct value, and if this is quest
         if strncmp(eName,'Fbk',3)
+           %if trl>1
+               prevRTs= arrayfun(  @(x) x.Rsp.RT,   trialInfo(1:trl)  );
+               muRT=mean(prevRTs(isfinite(prevRTs)));
+               fprintf('RT: %.03f mean: %.03f\n', trialInfo(trl).Rsp.RT,muRT);
+           %else
+           %    muRT=0;
+           %end
+           
+           % are we just a little faster than our mean?
+           perf= trialInfo(trl).Rsp.RT <  muRT -0.05;
+           subj.bonused(trl)=perf; % record to subject info
+           
            estart=GetSecs(); % start feedback right away (after Rsp)
-           params = [ params, runQuest==0, {trialInfo(trl).Rsp.correct} ];  
+           
+           % establish per trial params for feedback function
+           params = [ params, runQuest==0, {trialInfo(trl).Rsp.correct}, perf ];  
         end
         
         

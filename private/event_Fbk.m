@@ -1,7 +1,7 @@
 % testing 
 % global textures; w=setupScreen([150 150 150], [800 600]);cd ..;textures=getTextures(w); cd private/; event_Fbk(w,GetSecs(),1,1)
 
-function t=event_Fbk(w,when,rewblock,rewtype, correct,varargin)
+function t=event_Fbk(w,when,rewblock,rewtype, correct,perf,varargin)
   t.ideal=when;
   %% set textures
   persistent textures;
@@ -37,12 +37,25 @@ function t=event_Fbk(w,when,rewblock,rewtype, correct,varargin)
   [ center(1), center(2) ] = Screen('WindowSize', w);
   center=center./2;
   
-  % scale down to these dimensions (sx by sy)
-  sx=40;sy=40;
-  destrect = [ center(1)-sx center(2)-sy center(1)+sx center(2)+sy ];
-  Screen('DrawTexture', w,  textures.cnt.(type),[],destrect );
-  
-  
+
+  % show 2 happy faces when RT is fast
+  if perf && rewtype==1 && correct==1
+      % scale down to these dimensions (sx by sy)
+      offset=-50;
+      sx=40;sy=40;
+      
+      destrect = [ center(1)-sx+offset center(2)-sy center(1)+sx+offset center(2)+sy ];
+      Screen('DrawTexture', w,  textures.cnt.(type),[],destrect );
+
+      offset=-offset;
+      destrect = [ center(1)-sx+offset center(2)-sy center(1)+sx+offset center(2)+sy ];
+      Screen('DrawTexture', w,  textures.cnt.(type),[],destrect );
+  else
+      offset=0;
+      sx=40;sy=40;
+      destrect = [ center(1)-sx+offset center(2)-sy center(1)+sx+offset center(2)+sy ];
+      Screen('DrawTexture', w,  textures.cnt.(type),[],destrect );
+  end
   
   % Draw ring of images
   nInRing=6; % how many figs in the ring?
@@ -50,10 +63,10 @@ function t=event_Fbk(w,when,rewblock,rewtype, correct,varargin)
   % angle of diff between objects
   angle=2*pi/nInRing;
   % how far from the center?
-  rscale=100;
+  rscale=120;
   
   % display size (sx by sy)
-  sx=20;sy=20;
+  sx=30;sy=30;
   
   
   for n=1:nInRing
