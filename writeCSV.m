@@ -4,7 +4,7 @@ function writeCSV
  rootdir='subj';
  prefixes=unique(arrayfun(@(x) paren(strsplit(x.name,'_'),1), dir([rootdir '/*mat'])));
  
- fid=fopen('txt/tests.txt','w');
+ fid=fopen('txt/RewNeutIncong.txt','w');
  %header
  fprintf(fid,'subj type run trial congr correct RT\n');
  for i=1:length(prefixes)
@@ -18,7 +18,7 @@ function writeCSVwPrefix(prefix,rootdir,fid)
 
   paren=@(x,varargin) x(varargin{:});
   filelist=[ dir([rootdir '/*' prefix '*_reward_*mat']); 
-             dir([rootdir '/*' prefix '*_neutral_*.mat']) ];
+             dir([rootdir '/*' prefix '*_neutralIncong_*.mat']) ];
   files=arrayfun(@(x) x.name,filelist,'UniformOutput',0);
   
   % extract "now" time from mat file to get order
@@ -27,12 +27,16 @@ function writeCSVwPrefix(prefix,rootdir,fid)
   
   %header
   %fprintf('subj type run# trial# congr# correct RT\n');
+  if  ~isempty(files) && length(files) ~= 2
+      warning('skipping %s b/c have %d files',prefix,length(files))
+      return
+  end
   
   for d=1:length(files)
    file=files{i(d)};
    
    if     ~isempty(regexp(file,'_reward_','ONCE'));  type='reward';
-   elseif ~isempty(regexp(file,'_neutral_','ONCE')); type='neutral';
+   elseif ~isempty(regexp(file,'_neutralIncong_','ONCE')); type='neutral';
    else                                continue; 
    end
    
